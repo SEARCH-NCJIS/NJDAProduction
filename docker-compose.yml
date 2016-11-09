@@ -1,0 +1,57 @@
+version: '2'
+
+services:
+  njdaweb:
+    image: searchgroup/njdaweb
+    stdin_open: true
+    tty: true
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes_from:
+      - njdawebper
+    links:
+      - njdadb
+    restart: always
+    env_file:
+      - ./environment/njdaweb.env
+    depends_on:
+      - njdadb
+      - njdawebper
+      
+  njdawebper:
+    image: searchgroup/njdadbpersistant
+    hostname: njdawebper
+    stdin_open: true
+    tty: true
+    command: sleep 1
+    env_file:
+      - ./environment/njdaper.env
+    depends_on:
+      - njdadbdata
+      
+  njdadb:
+    image: searchgroup/njdadb
+    hostname: njdadb
+    stdin_open: true
+    tty: true
+    restart: always
+    volumes_from:
+      - njdadbdata
+    env_file:
+      - ./environment/db.env
+    volumes:
+      - /tmp/
+      
+  njdadbdata:
+    image: searchgroup/njdadbpersistant
+    hostname: njdadbdata
+    stdin_open: true
+    tty: true
+    env_file:
+      - ./environment/dbdata.env
+    command: sleep 1
+
+      
+    
+
